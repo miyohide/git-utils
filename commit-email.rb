@@ -32,13 +32,22 @@ require "shellwords"
 require "erb"
 require "digest"
 
+
+# FIXME 一つのファイルに処理を書き過ぎではないか。複数のファイルに分割する
+
+# FIXME 全体的にコメントが殆ど書かれていない。クラスやpublicなメソッドについては
+#       コメントを書く
+
 class SpentTime
+  # FIXME 仮引数名の変更。
   def initialize(label)
+    # FIXME イコール（=）の位置を合わせる
     @label = label
     @seconds = 0.0
   end
 
   def spend
+    # FIXME 変数名(returned_object)の変更
     start_time = Time.now
     returned_object = yield
     @seconds += (Time.now - start_time)
@@ -51,6 +60,7 @@ class SpentTime
 end
 
 class GitCommitMailer
+  # FIXME イコール（=）の位置を合わせる
   VERSION = "1.0.0"
   URL = "https://github.com/clear-code/git-utils"
 
@@ -134,12 +144,13 @@ class GitCommitMailer
     end
 
     def extract_to_addresses(mail)
-      to_value = nil
+      to_value = nil # FIXME 変数名(to_value)の変更
       if /^To:(.*\r?\n(?:^\s+.*)*)/n =~ mail
         to_value = $1
       else
         raise "'To:' header is not found in mail:\n#{mail}"
       end
+      # FIXME 正規表現の意味をコメントで追加する
       to_value_without_comment = to_value.gsub(/".*?"/n, "")
       to_value_without_comment.split(/\s*,\s*/n).collect do |address|
         extract_email_address(address.strip)
@@ -178,6 +189,7 @@ class GitCommitMailer
     end
 
     def format_size(size)
+      # FIXME 処理をコンパクトに書けないか？
       return "no limit" if size.nil?
       return "#{size}B" if size < KILO_SIZE
       size /= KILO_SIZE.to_f
@@ -190,6 +202,8 @@ class GitCommitMailer
 
     private
     def apply_options(mailer, options)
+      # FIXME 右辺と左辺で同じプロパティを指しているので、処理を
+      #       コンパクトに書けるはず。プロパティ名の配列をeachで回す？
       mailer.repository = options.repository
       #mailer.reference = options.reference
       mailer.repository_browser = options.repository_browser
@@ -218,6 +232,7 @@ class GitCommitMailer
     end
 
     def parse_size(size)
+      # FIXME 正規表現を工夫することにより、より短く書けると思う
       case size
       when /\A(.+?)GB?\z/i
         Float($1) * KILO_SIZE ** 3
@@ -330,6 +345,7 @@ class GitCommitMailer
       end
     end
 
+    # FIXME メソッドが長いので分割する
     def add_email_options(parser, options)
       parser.separator ""
       parser.separator "E-mail related options:"
@@ -383,6 +399,7 @@ class GitCommitMailer
       end
     end
 
+    # FIXME メソッドが長いので分割する
     def add_output_options(parser, options)
       parser.separator ""
       parser.separator "Output related options:"
@@ -652,6 +669,7 @@ class GitCommitMailer
     raise "unexpected change_type" if not [:update, :create, :delete].
                                             index(change_type)
 
+    # FIXME ネストしているif文の部分を共通化できないか？
     if reference_type == :branch
       if change_type == :update
         process_update_branch
@@ -835,6 +853,7 @@ EOF
 
     commits_summary = backward_commits_summary + forward_commits_summary.reverse
 
+    # FIXME unlessを使わない処理をかけないか？
     unless fast_forward
       rewind_only, explanation = explain_special_case
       message << explanation
@@ -843,6 +862,7 @@ EOF
     message << "\n"
     message << commits_summary.join
 
+    # FIXME unlessを使わない処理をかけないか？
     unless rewind_only
       new_commits = collect_new_commits
     end
@@ -1010,6 +1030,7 @@ EOF
       #branch_name = find_branch_name_from_its_descendant_revision(revision)
       descendant_revision = merge_commit.revision
 
+      # FIXME until,unless,notを使わないように処理を書き直す
       until base_revisions.index(revision)
         unless commit_info = @commit_info_map[revision]
           commit_info = create_commit_info(@reference, revision)
@@ -2002,6 +2023,7 @@ EOB
       end
 
       def diff_separator
+        # FIXME 67の意味をコメントに書く
         "#{"=" * 67}\n"
       end
     end
