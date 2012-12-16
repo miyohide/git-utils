@@ -71,17 +71,17 @@ class GitCommitMailer
 
       script = "#{command} #{suppress_stderr}"
       puts script if ENV['DEBUG']
-      result = nil
+      command_exec_output = nil
       with_working_direcotry(working_directory) do
         if block_given?
           IO.popen(script, "w+", &block)
         else
-          result = `#{script} 2>&1`
+          command_exec_output = `#{script} 2>&1`
         end
       end
-      raise "execute failed: #{command}\n#{result}" unless $?.exitstatus.zero?
-      result.force_encoding("UTF-8") if result.respond_to?(:force_encoding)
-      result
+      raise "execute failed: #{command}\n#{command_exec_output}" unless $?.exitstatus.zero?
+      command_exec_output.force_encoding("UTF-8") if command_exec_output.respond_to?(:force_encoding)
+      command_exec_output
     end
 
     def with_working_direcotry(working_directory)
@@ -134,14 +134,14 @@ class GitCommitMailer
     end
 
     def extract_to_addresses(mail)
-      to_value = nil
+      extracted_addresses = nil
       if /^To:(.*\r?\n(?:^\s+.*)*)/n =~ mail
-        to_value = $1
+        extracted_addresses = $1
       else
         raise "'To:' header is not found in mail:\n#{mail}"
       end
-      to_value_without_comment = to_value.gsub(/".*?"/n, "")
-      to_value_without_comment.split(/\s*,\s*/n).collect do |address|
+      extracted_addresses_without_comment = extracted_addresses.gsub(/".*?"/n, "")
+      extracted_addresses_without_comment.split(/\s*,\s*/n).collect do |address|
         extract_email_address(address.strip)
       end
     end
