@@ -190,31 +190,35 @@ class GitCommitMailer
 
     private
     def apply_options(mailer, options)
-      mailer.repository = options.repository
-      #mailer.reference = options.reference
-      mailer.repository_browser = options.repository_browser
-      mailer.github_base_url = options.github_base_url
-      mailer.github_user = options.github_user
-      mailer.github_repository = options.github_repository
-      mailer.send_per_to = options.send_per_to
-      mailer.from = options.from
-      mailer.from_domain = options.from_domain
-      mailer.sender = options.sender
-      mailer.add_diff = options.add_diff
-      mailer.add_html = options.add_html
-      mailer.max_size = options.max_size
-      mailer.repository_uri = options.repository_uri
-      mailer.rss_path = options.rss_path
-      mailer.rss_uri = options.rss_uri
-      mailer.show_path = options.show_path
-      mailer.send_push_mail = options.send_push_mail
-      mailer.name = options.name
-      mailer.server = options.server
-      mailer.port = options.port
-      mailer.date = options.date
-      mailer.git_bin_path = options.git_bin_path
-      mailer.track_remote = options.track_remote
-      mailer.verbose = options.verbose
+      properties = %w(repository
+                      reference
+                      repository_browser
+                      github_base_url
+                      github_user
+                      github_repository
+                      send_per_to
+                      from
+                      from_domain
+                      sender
+                      add_diff
+                      add_html
+                      max_size
+                      repository_uri
+                      rss_path
+                      rss_uri
+                      show_path
+                      send_push_mail
+                      name
+                      server
+                      port
+                      date
+                      git_bin_path
+                      track_remote
+                      verbose
+                     )
+      properties.each do |property|
+         mailer.send(property + "=", options.send(property))
+      end
     end
 
     def parse_size(size)
